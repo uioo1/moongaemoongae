@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Dropbox JavaScript 합본</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+    <script src="/__build__/Dropbox-sdk.min.js"></script>
+    <script src="/utils.js"></script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
+</head>
+
+<body>
+    <header class="page-header">
+        <div class="container">
+            <nav>
+                <a href="/">
+                    <h1>
+                        <img src="logo/logo.png" class="logo" /> js 코드뭉치
+                    </h1>
+                </a>
+                <a href="https://github.com/dropbox/dropbox-sdk-js/tree/master/examples/javascript"
+                    class="view-source">View Source</a>
+            </nav>
+            <h2 class="code">
+                <a href="/">기능들</a>
+            </h2>
+        </div>
+    </header>
+
+    
+    <section class="container main">
+        <!-- OAuth  부분 -->
+        <div class="container main">
+            <div id="pre-auth-section" style="display:none;">
+                <a href="" id="authlink" class="button">드롭박스 로그인</a>
+            </div>
+
+            <div id="authed-section" style="display:none;">
+                <p>OAuth 로그인 완료, 루트 디렉토리 표시</p>
+                <ul id="files"></ul>
+            </div>
+        </div>
+
+        <!-- Upload  부분 -->
+        <p>-파일 업로드-</p>
+
+        <form onSubmit="return">
+            <input type="file" id="file-upload" />
+            <button type="submit" id="file-upload-btn">Submit</button>
+        </form>
+
+        <!-- A place to show the status of the upload -->
+        <h2 id="results"></h2>
+    </section>
+
+    <section class="container main">
+        <p>파일 다운로드</p>
+
+        <form onSubmit="return">
+            <input type="text" id="file-download-path" placeholder="파일 경로" />
+            <button type="submit" id="file-download-btn">Submit</button>
+        </form>
+
+        <!-- The download button is added here -->
+        <div id="results" style="margin-top: 30px"></div>
+        <p class="info"><a
+                href="https://dropbox.github.io/dropbox-api-v2-explorer/#files_list_folder" target="_blank"></a>
+        </p>
+    </section>
+
+    <script type="module" src="dropbox_code.js"></script>
+</body>
+
+</html>

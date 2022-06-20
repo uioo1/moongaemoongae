@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\..\\moongaemoongae\\html"
+		},
+		{
+			"path": "..\\..\\..\\moongaemoongae"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "moongaemoongae"
+	}
+}
