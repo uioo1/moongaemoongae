@@ -422,7 +422,7 @@ if (isDBXAuthenticated()) {
 // OAuth Script end
 
 // Upload Script start
-function uploadFileDBX(filePath, DBXfile) {
+function uploadFileDBX(filePath, DBXfile, callback=null) {
     const UPLOAD_FILE_SIZE_LIMIT = 150 * 1024 * 1024;
     // var fileInput = document.getElementById('file-upload');
     var file = DBXfile;
@@ -435,6 +435,10 @@ function uploadFileDBX(filePath, DBXfile) {
                 results.appendChild(document.createTextNode('File uploaded!'));
                 results.appendChild(br);
                 console.log(response);
+                if (callback)
+                {   
+                    callback();
+                }
             })
             .catch(function (error) {
                 console.error(error);
@@ -476,6 +480,10 @@ function uploadFileDBX(filePath, DBXfile) {
         task.then(function (result) {
             var results = document.getElementById('results');
             results.appendChild(document.createTextNode('File uploaded!'));
+            if (callback)
+            {   
+                callback();
+            }
         }).catch(function (error) {
             console.error(error);
         });
