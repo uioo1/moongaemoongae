@@ -10,6 +10,7 @@ const META_DATA_DRIVE = "DROPBOX";
 const SLICE_RATIO = [0.1, 0.9];
 const SLICE_DRIVE = ["DROPBOX", "DROPBOX"];
 var meta = new MetaData("/Users/kygsm/meta.md");
+var metaBtnGroup = null;
 
 var DBX_CLIENT_ID = 'yhfujf4ushejyu5';
 var DBX_ACCESS_TOKEN = "";
@@ -71,7 +72,13 @@ function readMetaData(){
         console.log(meta);
         meta.readMetaData(str, function(){
             //console.log(meta._datas[0]._name);
-            for(let i = 0; i < meta._datas.length; i++){
+            if(metaBtnGroup){
+                metaBtnGroup.remove();
+                metaBtnGroup = null;
+            }
+            metaBtnGroup = document.createElement("btnGroup");
+            document.body.appendChild( metaBtnGroup );
+            for(let i = 0; i < meta._datas.length; i++){    
                 var submitUI = document.createElement("button");
                 var submitUItext = document.createTextNode( meta._datas[i]._name );
             
@@ -79,7 +86,7 @@ function readMetaData(){
                 submitUI.type = ""
                 submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
                 submitUI.appendChild( submitUItext );
-                document.body.appendChild( submitUI );
+                metaBtnGroup.appendChild(submitUI);
             }
         })
     });
