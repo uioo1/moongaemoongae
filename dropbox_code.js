@@ -12,11 +12,23 @@ const SLICE_DRIVE = ["DROPBOX", "DROPBOX"];
 var meta = new MetaData("/Users/kygsm/meta.md");
 
 var DBX_CLIENT_ID = 'yhfujf4ushejyu5';
-var DBX_ACCESS_TOKEN = "";
-var dbx = new Dropbox.Dropbox({ accessToken: DBX_ACCESS_TOKEN });
+var DBX_ACCESS_TOKEN = null;
+if (JSON.parse(localStorage.getItem('dbx-token')) != null) {
+    DBX_ACCESS_TOKEN = JSON.parse(localStorage.getItem('dbx-token')).dbx_token;
+    console.log("get it!");
+    console.log(DBX_ACCESS_TOKEN);
+}
+else {
+    console.log("failed!");
+    console.log(DBX_ACCESS_TOKEN);
+}
+// var DBX_ACCESS_TOKEN = "";
+var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID, accessToken: DBX_ACCESS_TOKEN });
 
-document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
-document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+//document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
+//document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
+
 
 // 승모 함수 부분
 function onFileBtnClicked(){
@@ -38,6 +50,10 @@ function onFileBtnClicked2(){
         uploadFile(event.target.files[0], false, SLICE_RATIO, SLICE_DRIVE);
     }
     */
+}
+
+function onGDLoginBtnClicked(){
+
 }
 
 function readFile(platform, path, callback) {
@@ -375,11 +391,21 @@ function getAccessTokenFromUrl() {
 }
 
 function isDBXAuthenticated() {
+    if(DBX_ACCESS_TOKEN != null)
+        return true;
     return !!getAccessTokenFromUrl();
 }
 
+function logoutDBX() {
+    window.localStorage.removeItem('dbx-token');
+    DBX_ACCESS_TOKEN = null;
+    dbx.authTokenRevoke();
+    window.location.href = window.location.origin;
+}
+
 function renderItems(items) {
-    var filesContainer = document.getElementById('files');
+    var filesContainer = document.getElementById('dbx-files');
+    console.log(filesContainer);
     items.forEach(function (item) {
         var li = document.createElement('li');
         li.innerHTML = item.name;
@@ -391,28 +417,53 @@ function showPageSection(elementId) {
     document.getElementById(elementId).style.display = 'block';
 }
 
-if (isDBXAuthenticated()) {
-    DBX_ACCESS_TOKEN = getAccessTokenFromUrl()
-    showPageSection('authed-section');
+function hidePageSection(elementId) {
+    document.getElementById(elementId).style.display = 'none';
+}
 
-    var dbx = new Dropbox.Dropbox({ accessToken: getAccessTokenFromUrl() });
-    dbx.filesListFolder({ path: '' })
+function listFiles(dbx, path) {
+    dbx.filesListFolder({ path: path })
         .then(function (response) {
             renderItems(response.result.entries);
         })
         .catch(function (error) {
             console.error(error);
         });
+}
+
+if (isDBXAuthenticated()) {
+    if(DBX_ACCESS_TOKEN == null){
+        DBX_ACCESS_TOKEN = getAccessTokenFromUrl()
+        const obj = {
+            dbx_token : DBX_ACCESS_TOKEN
+        }
+        localStorage.setItem('dbx-token', JSON.stringify(obj));
+        console.log(obj);
+        let token = JSON.parse(localStorage.getItem('dbx-token'));
+        console.log(token.dbx_token);    
+    }
+    showPageSection('dbx-info-id');
+    hidePageSection('dbx-authlogin');
+
+    dbx = new Dropbox.Dropbox({ accessToken: DBX_ACCESS_TOKEN });
+    listFiles(dbx, '')
     readMetaData();
 } else {
-    showPageSection('pre-auth-section');
-    var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID });
+    showPageSection('dbx-authlogin');
+    hidePageSection('dbx-info-id');
+    dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID });
     var authUrl = dbx.auth.getAuthenticationUrl('http://localhost:8080/')
         .then((authUrl) => {
-            document.getElementById('authlink').href = authUrl;
+            document.getElementById('dbx-authlink').href = authUrl;
+            console.log(document.getElementById('dbx-authlink').href);
         })
 }
 // OAuth Script end
+
+function showFolder(dbx, path, folder) {
+    var path = 'path' + 'folder';
+    listFiles(dbx, path);
+}
 
 // Upload Script start
 function uploadFileDBX(filePath, DBXfile, callback=null) {
