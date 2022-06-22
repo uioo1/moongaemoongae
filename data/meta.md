@@ -1,1 +1,0 @@
-[{"_name":"fuck.txt","_dataSize":12,"_fragments":[{"name":"fuck.txt0","path":"/data/","drive":"DROPBOX","size":1,"isEncrypted":false},{"name":"fuck.txt1","path":"/data/","drive":"DROPBOX","size":11,"isEncrypted":false}]}]

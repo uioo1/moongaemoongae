@@ -32,23 +32,11 @@ export class MetaData{
         this._datas.splice(this._datas.findIndex(i => i.name === name), 1);
     }
 
-    readMetaData(path = null, callback){
-        if(path){
-            this.setPath(path)
-        }
-
-        if(!this._dataPath){
-            //console.log("No path");
-            return;
-        }
-
-        readTextFile("/data/meta.md", function(text){
-            var data = JSON.parse(text);
-            this._datas = data;
-            //console.log(this._datas);
-            callback();
-        }.bind(this));
-
+    readMetaData(data, callback){
+        var parsedData = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(data)))
+        this._datas = parsedData;
+        //console.log(this._datas);
+        callback();
     }
 
     writeMetaData(path){

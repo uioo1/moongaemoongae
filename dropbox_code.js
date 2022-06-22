@@ -66,6 +66,25 @@ function readFile(platform, path, callback) {
     }
 }
 
+function readMetaData(){
+    readFile(META_DATA_DRIVE, "/meta.md", function(str){
+        console.log(meta);
+        meta.readMetaData(str, function(){
+            //console.log(meta._datas[0]._name);
+            for(let i = 0; i < meta._datas.length; i++){
+                var submitUI = document.createElement("button");
+                var submitUItext = document.createTextNode( meta._datas[i]._name );
+            
+                submitUI.type = "submit";
+                submitUI.type = ""
+                submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
+                submitUI.appendChild( submitUItext );
+                document.body.appendChild( submitUI );
+            }
+        })
+    });
+}
+
 /**
  * 모든 파일이 로드 되었는지 확인
  * 로드 되었다면 Callback 함수 호출
@@ -174,10 +193,10 @@ function uploadFile(file, isCrypto, ratios, drives){
                 const cryptor = new Crypto(KEY, IV);
                 files[i] = cryptor.encrypt(CryptoJS.lib.WordArray.create(files[i]));
                 
-                frag.addFileInfo(file.name + i, "/data/", drives[i], fileSize, true);
+                frag.addFileInfo(file.name + i, "/mgmg/", drives[i], fileSize, true);
             }
             else
-                frag.addFileInfo(file.name + i, "/data/", drives[i], fileSize, false);
+                frag.addFileInfo(file.name + i, "/mgmg/", drives[i], fileSize, false);
 
             switch (drives[i]) {
                 case "PC":
@@ -197,11 +216,11 @@ function uploadFile(file, isCrypto, ratios, drives){
                     const dbxBlob = new Blob([files[i]], {type : 'application/octet-stream'});
                     if (files.length === 0){
                         var dbxFile = new File([dbxBlob], file.name);
-                        uploadFileDBX('', dbxFile);
+                        uploadFileDBX('/', dbxFile);
                     }
                     else{
                         var dbxFile = new File([dbxBlob], file.name + i);
-                        uploadFileDBX('mgmg', dbxFile);
+                        uploadFileDBX('/mgmg/', dbxFile);
                     }
                     
                     break;
@@ -225,11 +244,12 @@ function uploadFile(file, isCrypto, ratios, drives){
                 break;
     
             case "DROPBOX":                
-                uploadFileDBX(fileMD)                                
+                uploadFileDBX('/', fileMD);                             
                 break;
             default: 
                 break;
         }
+        readMetaData();
     }
 }
 
@@ -383,19 +403,7 @@ if (isDBXAuthenticated()) {
         .catch(function (error) {
             console.error(error);
         });
-    meta.readMetaData(null, function(){
-        //console.log(meta._datas[0]._name);
-        for(let i = 0; i < meta._datas.length; i++){
-            var submitUI = document.createElement("button");
-            var submitUItext = document.createTextNode( meta._datas[i]._name );
-        
-            submitUI.type = "submit";
-            submitUI.type = ""
-            submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
-            submitUI.appendChild( submitUItext );
-            document.body.appendChild( submitUI );
-        }
-    });
+    readMetaData();
 } else {
     showPageSection('pre-auth-section');
     var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID });
@@ -413,7 +421,7 @@ function uploadFileDBX(filePath, DBXfile) {
     var file = DBXfile;
 
     if (file.size < UPLOAD_FILE_SIZE_LIMIT) { // File is smaller than 150 Mb - use filesUpload API
-        dbx.filesUpload({ path: '/' + filePath + file.name, contents: file, mode:'overwrite' })
+        dbx.filesUpload({ path: filePath + file.name, contents: file, mode:'overwrite' })
             .then(function (response) {
                 var results = document.getElementById('results');
                 var br = document.createElement("br");
@@ -474,6 +482,7 @@ function downloadFileDBX(filepath, callback) {
     // var FILE_PATH = document.getElementById('file-path').value;
     var content;
     dbx = new Dropbox.Dropbox({ accessToken: DBX_ACCESS_TOKEN });
+    console.log(filepath);
     dbx.filesDownload({ path: filepath })
         .then(function (response) {
             // console.log(response)
