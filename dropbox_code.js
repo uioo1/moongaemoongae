@@ -251,12 +251,11 @@ function uploadFile(file, isCrypto, ratios, drives){
                 break;
     
             case "DROPBOX":                
-                uploadFileDBX('/', fileMD);                             
+                uploadFileDBX('/', fileMD, readMetaData);                             
                 break;
             default: 
                 break;
         }
-        readMetaData();
     }
 }
 
