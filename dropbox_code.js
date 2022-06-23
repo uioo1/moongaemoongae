@@ -679,6 +679,19 @@ function renderItemsGD() {
             var nameB = b.name.toUpperCase();
             return nameA < nameB;
         })
+        var li = document.createElement('li');
+        var submitUI = document.createElement("button");
+        submitUI.style.visibility = 'visible';
+        li.setAttribute("id", "gd-file-li");
+        li.innerHTML = "..";
+        filesContainer.appendChild(li);
+        submitUI.setAttribute("class", 'gd-file-download');
+        submitUI.type = "submit";
+        var submitUItext = document.createTextNode("열기");
+        submitUI.onclick = tempChangeFile.bind(null);
+        submitUI.appendChild(submitUItext);
+        li.appendChild(submitUI);
+
         items.forEach(function (item) {
             var li = document.createElement('li');
             var submitUI = document.createElement("button");
@@ -691,11 +704,12 @@ function renderItemsGD() {
             var submitUItext = document.createTextNode("다운로드");
             submitUI.type = "submit";
 
+            submitUI.onclick = tempDownFile.bind(parameter);
             if(item.mimeType === "application/vnd.google-apps.folder"){
-                submitUI.style.visibility = 'hidden';
+                var submitUItext = document.createTextNode("열기");
+                submitUI.onclick = tempChangeFile.bind(item);
             }
         
-            submitUI.onclick = tempDownFile.bind(parameter);
             submitUI.appendChild(submitUItext);
             li.appendChild(submitUI);
         });
@@ -727,6 +741,21 @@ function logoutDBX() {
 
 function tempDownFile() {
     downloadFile(this.drive, this.path);
+}
+
+function tempChangeFile(){
+    if(!this){
+        var paths = googlePath.split("/");
+        googlePath = "";
+        for(let i = 0; i < paths.length - 2; i++){
+            googlePath += paths[i] += "/";
+        }
+    }
+    else{
+        googlePath +=this.name + "/";
+    }
+    console.log(googlePath)
+    renderItemsGD();
 }
 
 function renderItems(items) {
