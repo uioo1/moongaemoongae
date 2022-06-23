@@ -92,14 +92,6 @@
                                 <li><a title="Dropbox" href="index.html"><span class="mini-sub-pro">드롭박스</span></a></li>
                             </ul>
                         </li>
-                        <li>
-                            <a class="has-arrow" href="mailbox.html" aria-expanded="false"><i class="icon nalika-mail icon-wrap"></i> <span class="mini-click-non">Mailbox</span></a>
-                            <ul class="submenu-angle" aria-expanded="false">
-                                <li><a title="Inbox" href="mailbox.html"><span class="mini-sub-pro">Inbox</span></a></li>
-                                <li><a title="View Mail" href="mailbox-view.html"><span class="mini-sub-pro">View Mail</span></a></li>
-                                <li><a title="Compose Mail" href="mailbox-compose.html"><span class="mini-sub-pro">Compose Mail</span></a></li>
-                            </ul>
-                        </li>
                     </ul>
                 </nav>
             </div>
@@ -216,7 +208,7 @@
                 </div>
             </div>
         </div>
-        <div class="encrypted-files">
+        <div class="fragment-files">
             <div class="row admin text-center">
                 <div class="col-md-12">
                     <div class="row">
@@ -252,13 +244,47 @@
                                 <div class="abcd">
                                     <h5 size=2>드롭박스 : 구글 드라이브</h5>
                                     <font size=2 id="slider_value_view">5 : 5</font>
-                                    <input oninput="ShowSliderValue(this.value)" type="range" name="storage-ratio" value="5" min="1" max="9">
+                                    <input id="frg-ratio" oninput="ShowSliderValue(this.value)" type="range" name="storage-ratio" value="5" min="1" max="9">
                                 </div>
                                 <div class="frg-upload-block">
                                     <form onSubmit="return">
                                         <input type="file" id="frgfile-upload" class="frg-upload-input"/>
-                                        <button type="button" id="fegfile-upload-btn" class="frg-upload-btn">업로드</button>
+                                        <button type="button" id="frgfile-upload-btn" class="frg-upload-btn">업로드</button>
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fragment-files">
+            <div class="row admin text-center">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
+                            <div class="admin-content analysis-progrebar-ctn res-mg-t-15">
+                                <h4 class="text-left text-uppercase"><b>Encrypt Dropbox Upload</b></h4>
+                                <div class="row vertical-center-box vertical-center-box-tablet">
+                                    <div class="dbx-upload-block">
+                                        <form onSubmit="return">
+                                            <input type="file" id="dbxfile-upload" class="dbx-upload-input"/>
+                                            <button type="button" id="dbxfile-upload-btn" class="dbx-upload-btn">암호화 및 업로드</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12" style="margin-bottom:1px;">
+                            <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
+                                <h4 class="text-left text-uppercase"><b>Encrypt Google Drive Upload</b></h4>
+                                <div class="row vertical-center-box vertical-center-box-tablet">
+                                    <div class="gd-upload-block">
+                                        <form onSubmit="return">
+                                            <input type="file" id="gdfile-upload" class="gd-upload-input"/>
+                                            <button type="button" id="gdfile-upload-btn" class="gd-upload-btn">암호화 및 업로드</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -314,68 +340,6 @@
 
 
 
-
-
-
-
-
-    <header class="page-header">
-        <div class="container">
-            <nav>
-                <a href="/">
-                    <h1>
-                        <img src="logo/logo.png" class="logo" /> js 코드뭉치
-                    </h1>
-                </a>
-                <a href="https://github.com/dropbox/dropbox-sdk-js/tree/master/examples/javascript"
-                    class="view-source">View Source</a>
-            </nav>
-            <h2 class="code">
-                <a href="/">기능들</a>
-            </h2>
-        </div>
-    </header>
-
-    
-    <section class="container main">
-        <!-- OAuth  부분 -->
-        <div class="container main">
-            <div id="pre-auth-section" style="display:none;">
-                <a href="" id="authlink" class="button">드롭박스 로그인</a>
-            </div>
-
-            <div id="authed-section" style="display:none;">
-                <p>OAuth 로그인 완료, 루트 디렉토리 표시</p>
-                <ul id="files"></ul>
-            </div>
-        </div>
-
-        <!-- Upload  부분 -->
-        <p>-파일 업로드-</p>
-
-        <form onSubmit="return">
-            <input type="file" id="file-upload" />
-            <button type="button" id="file-upload-btn">Submit</button>
-        </form>
-
-        <!-- A place to show the status of the upload -->
-        <h2 id="results"></h2>
-    </section>
-
-    <section class="container main">
-        <p>파일 다운로드</p>
-
-        <form onSubmit="return">
-            <input type="text" id="file-download-path" placeholder="파일 경로" />
-            <button type="button" id="file-download-btn">Submit</button>
-        </form>
-
-        <!-- The download button is added here -->
-        <div id="results" style="margin-top: 30px"></div>
-        <p class="info"><a
-                href="https://dropbox.github.io/dropbox-api-v2-explorer/#files_list_folder" target="_blank"></a>
-        </p>
-    </section>
     <script type="module" src="dropbox_code.js"></script>
     <script language = "javascript">function ShowSliderValue(sVal){	
         var obValueView = document.getElementById("slider_value_view");

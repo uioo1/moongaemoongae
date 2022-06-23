@@ -39,7 +39,7 @@ var metaBtnGroup = null;
 
 document.getElementById("dbxfile-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("gdfile-upload-btn").addEventListener("click", onFileBtnClicked);
-document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+document.getElementById("frgfile-upload-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
 
