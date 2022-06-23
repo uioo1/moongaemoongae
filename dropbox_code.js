@@ -467,7 +467,7 @@ if (isDBXAuthenticated()) {
 // OAuth Script end
 
 function showFolder(dbx, path, folder) {
-    var path = 'path' + 'folder';
+    var path = path + folder;
     listFiles(dbx, path);
 }
 
