@@ -652,7 +652,7 @@ function renderItemsGD() {
             li.setAttribute("id", "dbx-file-li");
             li.innerHTML = item.name;
             filesContainer.append(li);
-            var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
+            var parameter = {drive:'GOOGLE', path: '/' + item.name}; 
             submitUI.setAttribute("class", 'dbx-file-download');
             var submitUItext = document.createTextNode("Download");
             submitUI.type = "submit";
