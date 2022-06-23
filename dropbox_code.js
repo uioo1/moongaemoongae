@@ -415,7 +415,9 @@ function renderItems(items) {
     items.forEach(function (item) {
         var li = document.createElement('li');
         li.innerHTML = item.name;
-        filesContainer.appendChild(li);
+        var btn = document.createElement('a');
+        btn.href = downloadFileDBX('/' + item.name);
+        filesContainer.append(li, btn);
     });
 }
 
