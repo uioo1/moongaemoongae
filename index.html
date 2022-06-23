@@ -226,7 +226,7 @@
                                 <div class="row vertical-center-box vertical-center-box-tablet">
                                     <div class="dbx-upload-block">
                                         <form onSubmit="return">
-                                            <input type="file" id="dbxfile-upload" />
+                                            <input type="file" id="dbxfile-upload" class="dbx-upload-input"/>
                                             <button type="button" id="dbxfile-upload-btn" class="dbx-upload-btn">업로드</button>
                                         </form>
                                     </div>
@@ -239,7 +239,7 @@
                                 <div class="row vertical-center-box vertical-center-box-tablet">
                                     <div class="gd-upload-block">
                                         <form onSubmit="return">
-                                            <input type="file" id="gdfile-upload" />
+                                            <input type="file" id="gdfile-upload" class="gd-upload-input"/>
                                             <button type="button" id="gdfile-upload-btn" class="gd-upload-btn">업로드</button>
                                         </form>
                                     </div>
@@ -249,9 +249,16 @@
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
                                 <h4 class="text-left text-uppercase"><b>Fragment Upload</b></h4>
-                                <input type="range" name="holy" min="0" max="10">
-                                <div class="progress progress-mini">
-                                    <div style="width: 60%;" class="progress-bar bg-blue"></div>
+                                <div class="abcd">
+                                    <h5 size=2>드롭박스 : 구글 드라이브</h5>
+                                    <font size=2 id="slider_value_view">5 : 5</font>
+                                    <input oninput="ShowSliderValue(this.value)" type="range" name="storage-ratio" value="5" min="1" max="9">
+                                </div>
+                                <div class="frg-upload-block">
+                                    <form onSubmit="return">
+                                        <input type="file" id="frgfile-upload" class="frg-upload-input"/>
+                                        <button type="button" id="fegfile-upload-btn" class="frg-upload-btn">업로드</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -370,6 +377,11 @@
         </p>
     </section>
     <script type="module" src="dropbox_code.js"></script>
+    <script language = "javascript">function ShowSliderValue(sVal){	
+        var obValueView = document.getElementById("slider_value_view");
+        obValueView.innerHTML = sVal + " : " + (10-sVal);
+    }
+    </script>
 
 </body>
 
