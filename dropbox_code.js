@@ -405,6 +405,13 @@ async function intializeGapiClient() {
         discoveryDocs: [DISCOVERY_DOC],
     });
     gapiInited = true;
+    if (JSON.parse(localStorage.getItem('gd-token')) != null) {
+        gapi.client.setToken(JSON.parse((localStorage.getItem('gd-token'))));
+        console.log(gapi.client.getToken());
+        showPageSection('gd-info-id');
+        hidePageSection('gd-authlogin');
+        getFileListat("/")
+    }
     //maybeEnableButtons();
 }
 
@@ -456,15 +463,12 @@ function handleAuthClick() {
 function handleSignoutClick() {
     const token = gapi.client.getToken();
     if (token !== null) {
-        google.accounts.oauth2.revoke(token.access_token);
+        //google.accounts.oauth2.revoke(token.access_token);
         gapi.client.setToken('');
-        document.getElementById('content').innerText = '';
-        document.getElementById('authorize_button').innerText = 'Authorize';
-        document.getElementById('signout_button').style.visibility = 'hidden';
+        window.localStorage.removeItem('gd-token');
+        showPageSection('gd-authlogin');
+        hidePageSection('gd-info-id');
     }
-
-    showPageSection('gd-authlogin');
-    hidePageSection('gd-info-id');
 }
 
 /**
@@ -475,6 +479,7 @@ function handleSignoutClick() {
 async function getFileInfo(path, createPath) {
     var parentID = 'root';
     var parent = null;
+
     var f = path.split("/");
     if (f[0] === "") {
         f.splice(0, 1);
@@ -511,12 +516,28 @@ async function getFileInfo(path, createPath) {
         parent = files[0];
         parentID = files[0].id;
     }
-    console.log(parent);
     return parent;
 }
 
+function getFileListat(path, callback) {
+    getFileInfo(path).then((fileInfo) => {
+        if(!fileInfo){
+            fileInfo = {id : 'root'}
+        }
+        gapi.client.drive.files.list({
+            'q': `'${fileInfo.id}' in parents and trashed = false`,
+            'pageSize': 300,
+            'fields': 'files(id, name, mimeType)',
+        }).then((response) => {
+            if(callback){
+                callback(response.result.files);
+            }
+            console.log(response.result.files);
+        });            
+    })
+}
+
 function downloadFileGoo(filepath, callback) {
-    createFolder("asd");
     getFileInfo(filepath).then((fileID) => {
         console.log(fileID);
         fileID = fileID.id;
