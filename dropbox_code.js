@@ -40,6 +40,7 @@ var metaBtnGroup = null;
 document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
+document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
 
 // 승모 함수 부분
 function onFileBtnClicked() {
@@ -421,8 +422,23 @@ function gisLoaded() {
     document.getElementById('gd-authlink').onclick = handleAuthClick;
 }
 
+function getGDToken() {
+    if (gapi.client.getToken() != null) {
+        console.log(gapi.client.getToken());
+        return gapi.client.getToken();
+    }
+}
+
 function handleAuthClick() {
     tokenClient.callback = async (resp) => {
+        var toekn = getGDToken();
+        localStorage.setItem('gd-token', JSON.stringify(toekn));
+        let token = JSON.parse(localStorage.getItem('gd-token'));
+        console.log(token.access_token);
+
+        showPageSection('gd-info-id');
+        hidePageSection('gd-authlogin');
+
         if (resp.error !== undefined) {
             throw (resp);
         }
@@ -446,6 +462,9 @@ function handleSignoutClick() {
         document.getElementById('authorize_button').innerText = 'Authorize';
         document.getElementById('signout_button').style.visibility = 'hidden';
     }
+
+    showPageSection('gd-authlogin');
+    hidePageSection('gd-info-id');
 }
 
 /**
