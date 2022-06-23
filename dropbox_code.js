@@ -63,6 +63,10 @@ function onFileBtnClicked2() {
     */
 }
 
+function onFileSmallBtnClicked(filepath) {
+    downloadFile(SLICE_DRIVE[0], filePath);
+}
+
 function onGDLoginBtnClicked(){
 
 }
@@ -615,15 +619,37 @@ function logoutDBX() {
     window.location.href = window.location.origin;
 }
 
+function tempDownFile() {
+    downloadFile(this.drive, this.path);
+}
+
 function renderItems(items) {
     var filesContainer = document.getElementById('dbx-files');
-    console.log(filesContainer);
     items.forEach(function (item) {
         var li = document.createElement('li');
+        var submitUI = document.createElement("button");
+        submitUI.style.visibility = 'hidden';
+        li.setAttribute("id", "dbx-file-li");
         li.innerHTML = item.name;
-        var btn = document.createElement('a');
-        btn.href = downloadFileDBX('/' + item.name);
-        filesContainer.append(li, btn);
+        //var btn = downloadJustFileDBX('/' + item.name);
+        filesContainer.append(li);
+        downloadFileDBX('/' + item.name, function(){
+            submitUI.style.visibility = 'visible';
+        })
+        var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
+        submitUI.setAttribute("class", 'dbx-file-download');
+        var submitUItext = document.createTextNode("Download");
+        submitUI.type = "submit";
+    
+        submitUI.onclick = tempDownFile.bind(parameter);
+        submitUI.appendChild(submitUItext);
+        li.appendChild(submitUI);
+        
+
+        // var btn = document.createElement('a');
+        // btn.href = downloadJustFileDBX('/' + item.name);
+        
+        
     });
 }
 
@@ -768,4 +794,22 @@ function downloadFileDBX(filepath, callback) {
             content = reader.readAsArrayBuffer(blob);
         }).catch(function (error) { })
     return false;
+}
+
+function downloadJustFileDBX(filepath, callback) {
+    // var FILE_PATH = document.getElementById('file-path').value;
+    var content;
+    var element = document.createElement('a');
+    dbx = new Dropbox.Dropbox({ accessToken: DBX_ACCESS_TOKEN });
+    var isFolder = true;
+    console.log(filepath);
+
+    dbx.filesDownload({ path: filepath })
+        .then(function (response) {
+            isFolder = false;
+            console.log(response);
+            callback(isFolder);
+
+        }).catch(function (error) { })
+    return element;
 }

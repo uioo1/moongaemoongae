@@ -91,16 +91,33 @@ body {}
 /*----------------------------------------*/
 /* 왼쪽 바 부분 하는중 */
 
+.dbx-file-li {
 
+}
 .button, button {
     border-radius: 3px;
-    background-color: #00c73c;
+    background-color: #167bff;
     border: none;
     color: #fff;
-    width: 200px;
+    width: 90px;
     font-size: 14px;
     padding: 9px 14px;
     text-decoration: none;
+    align-items: ;
+}
+.dbx-file-download {
+    background-color:rgb(0, 151, 238);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 20px;
+    width: 90px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
+    margin-right: 20px;
+    margin-left: 10px;
+    margin-top: 5px;
 }
 .gd-btn{
     background-color:rgb(238, 202, 0);
