@@ -37,9 +37,17 @@ var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID, accessToken: DBX_ACCESS
 var meta = new MetaData("/Users/kygsm/meta.md");
 var metaBtnGroup = null;
 
-document.getElementById("dbxfile-upload-btn").addEventListener("click", onFileBtnClicked);
-document.getElementById("gdfile-upload-btn").addEventListener("click", onFileBtnClicked);
-document.getElementById("frgfile-upload-btn").addEventListener("click", onFileBtnClicked2);
+var dropboxPath = "/";
+var googlePath = "/";
+
+document.getElementById("dbxfile-upload-btn").addEventListener("click", onUploadFileClicked.bind(
+    {platform : "DROPBOX", path : dropboxPath, fileInput : "dbxfile-upload", callback : null}));
+document.getElementById("gdfile-upload-btn").addEventListener("click", onUploadFileClicked.bind(
+    {platform : "GOOGLE", path : googlePath, fileInput : "gdfile-upload", callback : null}));
+
+document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
+document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
 
@@ -48,6 +56,15 @@ function onFileBtnClicked() {
     var fileInput = document.getElementById("dbxfile-upload");
     console.log(fileInput)
     uploadFragementFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
+}
+
+function onUploadFileClicked(){
+    var platform = this.platform;
+    var fileInput = document.getElementById(this.fileInput);
+    var path = this.path;
+    var callback = this.callback;
+
+    uploadFile(platform, path, fileInput.files[0], callback);
 }
 
 function onFileBtnClicked2() {
@@ -152,6 +169,28 @@ function downloadFile(platform, path) {
     });
 }
 
+function uploadFile(platform, path, file, callback){
+    switch (platform) {
+        case "PC":
+            element.href = URL.createObjectURL(file);
+            element.setAttribute('download', file.name + i);
+
+            document.body.appendChild(element);
+            element.click();
+            break;
+
+        case "GOOGLE":
+            uploadFileGoo(path, file, callback);
+            break;
+
+        case "DROPBOX":
+            uploadFileDBX(path, file, callback);
+            break;
+        default:
+            break;
+    }
+}
+
 function downloadFragmentFile() {
     var fileName = this._name;
     var fragments = this._fragments;
@@ -236,66 +275,16 @@ function uploadFragementFile(file, isCrypto, ratios, drives) {
             else
                 frag.addFileInfo(file.name + i, "/mgmg/", drives[i], fileSize, false);
 
-            switch (drives[i]) {
-                case "PC":
-                    var element = document.createElement('a');
-                    const blob = new Blob([files[i]], { type: 'application/octet-stream' });
-                    element.href = URL.createObjectURL(blob);
-                    element.setAttribute('download', file.name + i);
+            const gooBlob = new Blob([files[i]], { type: 'application/octet-stream' });
+            var gooFile = new File([gooBlob], file.name + i);
 
-                    document.body.appendChild(element);
-                    element.click();
-                    break;
-
-                case "GOOGLE":
-                    const gooBlob = new Blob([files[i]], { type: 'application/octet-stream' });
-                    if (files.length === 0) {
-                        var gooFile = new File([gooBlob], file.name);
-                        uploadFileGoo('/', gooFile);
-                    }
-                    else {
-                        var gooFile = new File([gooBlob], file.name + i);
-                        uploadFileGoo('/mgmg/', gooFile);
-                    }
-                    break;
-
-                case "DROPBOX":
-                    const dbxBlob = new Blob([files[i]], { type: 'application/octet-stream' });
-                    if (files.length === 0) {
-                        var dbxFile = new File([dbxBlob], file.name);
-                        uploadFileDBX('/', dbxFile);
-                    }
-                    else {
-                        var dbxFile = new File([dbxBlob], file.name + i);
-                        uploadFileDBX('/mgmg/', dbxFile);
-                    }
-                    break;
-                default:
-                    break;
-            }
+            uploadFile(drives[i], '/mgmg/', gooFile);
         }
         meta.pushData(frag);
         const blobMD = new Blob([meta.writeMetaData()], { type: 'application/octet-stream' });
         var fileMD = new File([blobMD], "meta.md");
 
-        switch (META_DATA_DRIVE) {
-            case "PC":
-                var a = document.createElement("a");
-                a.href = URL.createObjectURL(file);
-                a.download = "meta.md";
-                a.click();
-                break;
-
-            case "GOOGLE":
-                uploadFileGoo('/', fileMD, readMetaData);
-                break;
-
-            case "DROPBOX":
-                uploadFileDBX('/', fileMD, readMetaData);
-                break;
-            default:
-                break;
-        }
+        uploadFile(META_DATA_DRIVE, '/', fileMD, readMetaData);
     }
 }
 
@@ -633,6 +622,29 @@ async function createFolder(folderName) {
             "mimeType": "application/vnd.google-apps.folder",
             "description": "Some"
         }
+    });
+}
+
+function renderItemsGoo() {
+    var filesContainer = document.getElementById('dbx-files');
+    items.forEach(function (item) {
+        var li = document.createElement('li');
+        var submitUI = document.createElement("button");
+        submitUI.style.visibility = 'hidden';
+        li.setAttribute("id", "dbx-file-li");
+        li.innerHTML = item.name;
+        filesContainer.append(li);
+        downloadFileDBX('/' + item.name, function(){
+            submitUI.style.visibility = 'visible';
+        })
+        var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
+        submitUI.setAttribute("class", 'dbx-file-download');
+        var submitUItext = document.createTextNode("Download");
+        submitUI.type = "submit";
+    
+        submitUI.onclick = tempDownFile.bind(parameter);
+        submitUI.appendChild(submitUItext);
+        li.appendChild(submitUI);
     });
 }
 
