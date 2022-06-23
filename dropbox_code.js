@@ -45,17 +45,20 @@ document.getElementById("dbxfile-upload-btn").addEventListener("click", onUpload
 document.getElementById("gdfile-upload-btn").addEventListener("click", onUploadFileClicked.bind(
     {platform : "GOOGLE", path : googlePath, fileInput : "gdfile-upload", callback : null}));
 
-document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
-document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+document.getElementById("frgfile-upload-btn").addEventListener("click", onFrgFileBtnClicked);
+//document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
 
 // 승모 함수 부분
-function onFileBtnClicked() {
-    var fileInput = document.getElementById("dbxfile-upload");
-    console.log(fileInput)
-    uploadFragementFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
+function onFrgFileBtnClicked() {
+    var fileInput = document.getElementById("frgfile-upload");
+    var ratio = document.getElementById("frg-ratio");
+    var custom_ratio = [ratio.value/10, (10-ratio.value)/10];
+    console.log(custom_ratio);
+    console.log(fileInput.files[0])
+    uploadFragementFile(fileInput.files[0], false, custom_ratio, SLICE_DRIVE);
 }
 
 function onUploadFileClicked(){
@@ -125,18 +128,26 @@ function readMetaData() {
                 metaBtnGroup.remove();
                 metaBtnGroup = null;
             }
-            metaBtnGroup = document.createElement("btnGroup");
-            document.body.appendChild(metaBtnGroup);
+            metaBtnGroup = document.createElement("btngroup");
+            var frg_group = document.getElementById('frg-files')
             for (let i = 0; i < meta._datas.length; i++) {
+                var li = document.createElement('li');
+                li.setAttribute("id", "frg-file-li");
+                li.innerHTML = meta._datas[i]._name;
+
                 var submitUI = document.createElement("button");
-                var submitUItext = document.createTextNode(meta._datas[i]._name);
+                //var submitUItext = document.createTextNode(meta._datas[i]._name);
+                var submitUItext = document.createTextNode('Down plz');
 
                 submitUI.type = "submit";
                 submitUI.type = ""
                 submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
                 submitUI.appendChild(submitUItext);
-                metaBtnGroup.appendChild(submitUI);
+                li.appendChild(submitUI);
+
+                metaBtnGroup.appendChild(li);
             }
+            frg_group.appendChild(metaBtnGroup);
         })
     });
 }
@@ -788,10 +799,6 @@ function uploadFileDBX(filePath, DBXfile, callback = null) {
     if (file.size < UPLOAD_FILE_SIZE_LIMIT) { // File is smaller than 150 Mb - use filesUpload API
         dbx.filesUpload({ path: filePath + file.name, contents: file, mode: 'overwrite' })
             .then(function (response) {
-                var results = document.getElementById('results');
-                var br = document.createElement("br");
-                results.appendChild(document.createTextNode('File uploaded!'));
-                results.appendChild(br);
                 console.log(response);
                 if (callback) {
                     callback();
@@ -835,8 +842,8 @@ function uploadFileDBX(filePath, DBXfile, callback = null) {
         }, Promise.resolve());
 
         task.then(function (result) {
-            var results = document.getElementById('results');
-            results.appendChild(document.createTextNode('File uploaded!'));
+            // var results = document.getElementById('results');
+            // results.appendChild(document.createTextNode('File uploaded!'));
             if (callback) {
                 callback();
             }
