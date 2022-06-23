@@ -40,7 +40,6 @@ var metaBtnGroup = null;
 document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
-var metaBtnGroup = null;var meta = new MetaData("/Users/kygsm/meta.md");
 
 // 승모 함수 부분
 function onFileBtnClicked() {
@@ -415,7 +414,7 @@ function gisLoaded() {
     });
     gisInited = true;
     //maybeEnableButtons();
-    handleAuthClick();
+    document.getElementById('gd-authlink').onclick = handleAuthClick;
 }
 
 function handleAuthClick() {
