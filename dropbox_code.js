@@ -137,8 +137,9 @@ function readMetaData() {
 
                 var submitUI = document.createElement("button");
                 //var submitUItext = document.createTextNode(meta._datas[i]._name);
-                var submitUItext = document.createTextNode('Down plz');
+                var submitUItext = document.createTextNode('다운로드');
 
+                submitUI.setAttribute("class", 'frg-file-download');
                 submitUI.type = "submit";
                 submitUI.type = ""
                 submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
@@ -664,8 +665,8 @@ function renderItemsGD() {
             li.innerHTML = item.name;
             filesContainer.append(li);
             var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
-            submitUI.setAttribute("class", 'dbx-file-download');
-            var submitUItext = document.createTextNode("Download");
+            submitUI.setAttribute("class", 'gd-file-download');
+            var submitUItext = document.createTextNode("다운로드");
             submitUI.type = "submit";
 
             if(item.mimeType === "application/vnd.google-apps.folder"){
@@ -722,7 +723,7 @@ function renderItems(items) {
         })
         var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
         submitUI.setAttribute("class", 'dbx-file-download');
-        var submitUItext = document.createTextNode("Download");
+        var submitUItext = document.createTextNode("다운로드");
         submitUI.type = "submit";
     
         submitUI.onclick = tempDownFile.bind(parameter);

@@ -19,7 +19,7 @@
 /*----------------------------------------*/
 /*  1.  Theme default CSS
 /*----------------------------------------*/
-html, body {height: 100%; font-family: 'Roboto', sans-serif;font-weight:400;background:#152036;}
+html, body {height: 100%; font-family: 'SCDream6', 'Roboto', sans-serif;font-weight:400;background:#152036;}
 .floatleft {float:left}
 .floatright {float:right}
 .alignleft {float:left;margin-right:15px;margin-bottom: 15px}
@@ -85,12 +85,19 @@ body {}
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+    font-family: "SCDream6";
+    src: url("fonts/SCDream6.woff") format('woff');
+}
 
 /*----------------------------------------*/
 /*  8. Menu collapse Area
 /*----------------------------------------*/
 /* 왼쪽 바 부분 하는중 */
 
+.uploading-files {
+    margin-top: 15px;
+}
 .dbx-upload-block {
     display: inline-block;
 }
@@ -129,13 +136,14 @@ body {}
     border: none;
     color:#ffffff;
     line-height: 20px;
+    height: 36px;
     width: 90px;
     font-size: 14px;
     padding: 9px 14px;
     text-decoration: none;
     margin-right: 20px;
     margin-left: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 .gd-upload-input{
     border-color: rgb(238, 182, 0);
@@ -158,13 +166,14 @@ body {}
     border: none;
     color:#ffffff;
     line-height: 20px;
+    height: 36px;
     width: 90px;
     font-size: 14px;
     padding: 9px 14px;
     text-decoration: none;
     margin-right: 20px;
     margin-left: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 .frg-upload-input{
     border-color: rgb(170, 28, 253);
@@ -180,6 +189,34 @@ body {}
     padding: 9px 14px;
     text-decoration: none;
     margin-top: 5px;
+}
+.frg-encrypted-upload-btn {
+    background-color:rgb(0, 177, 0);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 20px;
+    width: 110px;
+    font-size: 13px;
+    padding: 9px 14px;
+    text-decoration: none;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.frg-file-download {
+    background-color:rgb(170, 28, 253);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 20px;
+    height: 36px;
+    width: 90px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
+    margin-right: 20px;
+    margin-left: 10px;
+    margin-top: 10px;
 }
 .gd-btn{
     background-color:rgb(238, 202, 0);
