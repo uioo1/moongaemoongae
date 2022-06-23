@@ -41,9 +41,9 @@ var dropboxPath = "/";
 var googlePath = "/";
 
 document.getElementById("dbxfile-upload-btn").addEventListener("click", onUploadFileClicked.bind(
-    {platform : "DROPBOX", path : dropboxPath, fileInput : "dbxfile-upload", callback : null}));
+    {platform : "DROPBOX", path : dropboxPath, fileInput : "dbxfile-upload", callback : listFiles}));
 document.getElementById("gdfile-upload-btn").addEventListener("click", onUploadFileClicked.bind(
-    {platform : "GOOGLE", path : googlePath, fileInput : "gdfile-upload", callback : null}));
+    {platform : "GOOGLE", path : googlePath, fileInput : "gdfile-upload", callback : renderItemsGD}));
 
 document.getElementById("frgfile-upload-btn").addEventListener("click", onFrgFileBtnClicked);
 //document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
@@ -66,7 +66,6 @@ function onUploadFileClicked(){
     var fileInput = document.getElementById(this.fileInput);
     var path = this.path;
     var callback = this.callback;
-
     uploadFile(platform, path, fileInput.files[0], callback);
 }
 
@@ -409,10 +408,9 @@ async function intializeGapiClient() {
     if (JSON.parse(localStorage.getItem('gd-token')) != null) {
         gapi.client.setToken(JSON.parse((localStorage.getItem('gd-token'))));
         console.log(gapi.client.getToken());
-        renderItemsGD();
         showPageSection('gd-info-id');
         hidePageSection('gd-authlogin');
-        getFileListGD("/")
+        renderItemsGD()
     }
     //maybeEnableButtons();
 }
@@ -442,8 +440,6 @@ function handleAuthClick() {
     tokenClient.callback = async (resp) => {
         var toekn = getGDToken();
         localStorage.setItem('gd-token', JSON.stringify(toekn));
-        let token = JSON.parse(localStorage.getItem('gd-token'));
-        console.log(token.access_token);
         renderItemsGD();
         showPageSection('gd-info-id');
         hidePageSection('gd-authlogin');
@@ -498,7 +494,7 @@ async function getFileInfo(path, createPath) {
                 'fields': 'files(id, name, parents)',
             });
         } catch (err) {
-            document.getElementById('content').innerText = err.message;
+            console.log(err.message);
             return;
         }
         const files = response.result.files;
@@ -540,9 +536,8 @@ function getFileListatGD(path, callback) {
 }
 
 function downloadFileGoo(filepath, callback) {
-    getFileInfo(filepath).then((fileID) => {
-        console.log(fileID);
-        fileID = fileID.id;
+    getFileInfo(filepath).then((fileInfo) => {
+        var fileID = fileInfo.id;
         //file buffer download
         gapi.client.drive.files.get({
             'fileId': fileID,
@@ -558,7 +553,7 @@ function downloadFileGoo(filepath, callback) {
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState === 4 && xhr.status == "200") {
                             console.log(xhr.response);
-                            callback(xhr.response);
+                            callback(xhr.response, fileInfo.name);
                         }
                         
                     };
@@ -574,55 +569,61 @@ function downloadFileGoo(filepath, callback) {
 
 function uploadFileGoo(filePath, fileData, callback) {
     var parentFileID = 'root';
-    if (filePath != "/") {
-        getFileInfo(filePath, true).then(
-            (parentFile) => {
-                parentFileID = parentFile.id;
-                //console.log(parentFile);
-                const boundary = '-------314159265358979323846';
-                const delimiter = "\r\n--" + boundary + "\r\n";
-                const close_delim = "\r\n--" + boundary + "--";
+    getFileInfo(filePath, true).then(
+        (parentFile) => {
+            parentFileID = (parentFile) ? parentFile.id : null;
+            console.log(parentFile);
+            const boundary = '-------314159265358979323846';
+            const delimiter = "\r\n--" + boundary + "\r\n";
+            const close_delim = "\r\n--" + boundary + "--";
 
-                var reader = new FileReader();
-                reader.readAsBinaryString(fileData);
-                reader.onload = function(e) {
-                    var contentType = fileData.type || 'application/octet-stream';
+            var reader = new FileReader();
+            reader.readAsBinaryString(fileData);
+            reader.onload = function(e) {
+                var contentType = fileData.type || 'application/octet-stream';
+                if(parentFileID){
                     var metadata = {
                         'title': fileData.name,
                         'mimeType': contentType,
                         'parents' : [{id : parentFileID}]
                     };
+                }
+                else{
+                    var metadata = {
+                        'title': fileData.name,
+                        'mimeType': contentType,
+                    };
+                }
 
-                    var base64Data = btoa(reader.result);
-                    var multipartRequestBody =
-                        delimiter +
-                        'Content-Type: application/json\r\n\r\n' +
-                        JSON.stringify(metadata) +
-                        delimiter +
-                        'Content-Type: ' + contentType + '\r\n' +
-                        'Content-Transfer-Encoding: base64\r\n' +
-                        '\r\n' +
-                        base64Data +
-                        close_delim;
+                var base64Data = btoa(reader.result);
+                var multipartRequestBody =
+                    delimiter +
+                    'Content-Type: application/json\r\n\r\n' +
+                    JSON.stringify(metadata) +
+                    delimiter +
+                    'Content-Type: ' + contentType + '\r\n' +
+                    'Content-Transfer-Encoding: base64\r\n' +
+                    '\r\n' +
+                    base64Data +
+                    close_delim;
 
-                    var request = gapi.client.request({
-                        'path': '/upload/drive/v2/files',
-                        'method': 'POST',
-                        'params': {'uploadType': 'multipart'},
-                        'headers': {
-                        'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
-                        },
-                        'body': multipartRequestBody});
-                    if (!callback) {
+                var request = gapi.client.request({
+                    'path': '/upload/drive/v2/files',
+                    'method': 'POST',
+                    'params': {'uploadType': 'multipart'},
+                    'headers': {
+                    'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                    },
+                    'body': multipartRequestBody});
+                if (!callback) {
                     callback = function(file) {
                         console.log(file)
                     };
-                    }
-                    request.execute(callback);
                 }
+                request.execute(callback);
             }
-        );
-    }
+        }
+    );
 }
 
 async function createFolder(folderName) {
@@ -639,6 +640,8 @@ async function createFolder(folderName) {
 
 function renderItemsGD() {
     var filesContainer = document.getElementById('gd-files');
+    filesContainer.replaceChildren();
+
     getFileListatGD(googlePath, function(items){
         items.sort(function (a, b){
             if(a.mimeType === b.mimeType){
@@ -662,7 +665,7 @@ function renderItemsGD() {
             submitUI.style.visibility = 'visible';
             li.setAttribute("id", "dbx-file-li");
             li.innerHTML = item.name;
-            filesContainer.append(li);
+            filesContainer.appendChild(li);
             var parameter = {drive:'GOOGLE', path: '/' + item.name}; 
             submitUI.setAttribute("class", 'dbx-file-download');
             var submitUItext = document.createTextNode("Download");
@@ -708,6 +711,7 @@ function tempDownFile() {
 
 function renderItems(items) {
     var filesContainer = document.getElementById('dbx-files');
+    filesContainer.replaceChildren();
     
     items.forEach(function (item) {
         var li = document.createElement('li');
@@ -716,7 +720,7 @@ function renderItems(items) {
         li.setAttribute("id", "dbx-file-li");
         li.innerHTML = item.name;
         //var btn = downloadJustFileDBX('/' + item.name);
-        filesContainer.append(li);
+        filesContainer.appendChild(li);
         downloadFileDBX('/' + item.name, function(){
             submitUI.style.visibility = 'visible';
         })
@@ -745,8 +749,8 @@ function hidePageSection(elementId) {
     document.getElementById(elementId).style.display = 'none';
 }
 
-function listFiles(dbx, path) {
-    dbx.filesListFolder({ path: path })
+function listFiles() {
+    dbx.filesListFolder({ path: (dropboxPath === "/") ? "" : dropboxPath })
         .then(function (response) {
             renderItems(response.result.entries);
         })
