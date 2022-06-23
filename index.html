@@ -124,7 +124,13 @@
                                     <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                                         <div class="header-right-info">
                                             <ul class="nav navbar-nav mai-top-nav header-right-menu">
+                                                <li>
+                                                    <form onSubmit="return" style="width: 30%;"">
+                                                        <input type="password" placeholder="비밀번호" id="encrypt-pwd" class="encrypt-pwd" style="display:inline-block; color:dimgray;"/>
+                                                    </form>
+                                                </li>
                                                 <li id="gd-authlogin" class="nav-item">
+                                                    
                                                     <div>
                                                         <div class="checkbox-title-pro">
                                                             <a href="#" id="gd-authlink" class="gd-btn">구글 드라이브 로그인</a>                                                         
@@ -187,8 +193,7 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-15" style="width:400px; height:450px;">
-                                <div style="width: 90%; display: inline-block;">
-                                    <img src="img/logo/fragment.png" width="30" height="30">
+                                <div>
                                     <h4 class="text-left text-uppercase" style="box-sizing:border-box; color:rgb(0, 151, 238);"><b>Dropbox List</b></h4>
                                 </div>
                                 <div style="overflow-y:auto;">

@@ -3,7 +3,7 @@ import { fragmentData } from "./fragmentData.js";
 import { MetaData } from "./metaData.js";
 
 const CRYPTO_SIZE = 2048;
-const KEY = "0123456789abcdef0123456789abcdef";
+var KEY = "0123456789abcdef0123456789abcdef";
 const IV = "0123456789abcdef";
 
 const META_DATA_DRIVE = "DROPBOX";
@@ -46,6 +46,7 @@ document.getElementById("gdfile-upload-btn").addEventListener("click", onUploadF
     {platform : "GOOGLE", path : googlePath, fileInput : "gdfile-upload", callback : renderItemsGD}));
 
 document.getElementById("frgfile-upload-btn").addEventListener("click", onFrgFileBtnClicked);
+document.getElementById("frgfile-encrypted-upload-btn").addEventListener("click", onEncryptedFrgFileBtnClicked);
 //document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
@@ -59,6 +60,17 @@ function onFrgFileBtnClicked() {
     console.log(custom_ratio);
     console.log(fileInput.files[0])
     uploadFragementFile(fileInput.files[0], false, custom_ratio, SLICE_DRIVE);
+}
+
+function onEncryptedFrgFileBtnClicked() {
+    var fileInput = document.getElementById("frgfile-upload");
+    KEY = document.getElementById('encrypt-pwd').value;
+    console.log(document.getElementById('encrypt-pwd').value);
+    var ratio = document.getElementById("frg-ratio");
+    var custom_ratio = [ratio.value/10, (10-ratio.value)/10];
+    console.log(custom_ratio);
+    console.log(fileInput.files[0])
+    uploadFragementFile(fileInput.files[0], true, custom_ratio, SLICE_DRIVE);
 }
 
 function onUploadFileClicked(){
@@ -137,8 +149,14 @@ function readMetaData() {
                 var submitUI = document.createElement("button");
                 //var submitUItext = document.createTextNode(meta._datas[i]._name);
                 var submitUItext = document.createTextNode('다운로드');
-
                 submitUI.setAttribute("class", 'frg-file-download');
+                for (let j = 0; j<meta._datas[i]._fragments.length; j++) {
+                    if(meta._datas[i]._fragments[j].isEncrypted) {
+                        submitUI.setAttribute("class", 'encrypted-frg-file-download');
+                        submitUItext = document.createTextNode('복호화 다운로드');
+                        break;
+                    }
+                }
                 submitUI.type = "submit";
                 submitUI.type = ""
                 submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
@@ -208,6 +226,7 @@ function downloadFragmentFile() {
     var fileSize = this._dataSize;
     var files = [];
     var ss = null;
+    KEY = document.getElementById('encrypt-pwd').value;
 
     console.log(fragments)
 
