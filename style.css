@@ -137,6 +137,9 @@ body {}
     margin-left: 10px;
     margin-top: 5px;
 }
+.gd-upload-input{
+    border-color: rgb(238, 182, 0);
+}
 .gd-upload-btn {
     background-color:rgb(238, 182, 0);
     border-radius: 3px;
@@ -162,6 +165,9 @@ body {}
     margin-right: 20px;
     margin-left: 10px;
     margin-top: 5px;
+}
+.frg-upload-input{
+    border-color: rgb(170, 28, 253);
 }
 .frg-upload-btn {
     background-color:rgb(170, 28, 253);
