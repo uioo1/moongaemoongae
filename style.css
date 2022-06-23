@@ -35,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 a {transition: all 0.3s ease 0s;text-decoration:none;}
 a:hover{
-  color: #ec4445;
+  color: #28293d;
   text-decoration: none;
 }
 a:visited, a:link, a:active {
@@ -89,6 +89,102 @@ body {}
 /*----------------------------------------*/
 /*  8. Menu collapse Area
 /*----------------------------------------*/
+/* 왼쪽 바 부분 하는중 */
+
+
+.button, button {
+    border-radius: 3px;
+    background-color: #00c73c;
+    border: none;
+    color: #fff;
+    width: 200px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
+}
+.gd-btn{
+    background-color:rgb(238, 202, 0);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 36px;
+    width: 200px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
+    margin-right: 20px;
+}
+.gd-btn::before{
+    content: "";
+    display: inline-block;
+    width:19px;
+    height:19px;
+    background-image:url('img/logo/googledrive.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    vertical-align: top;
+    margin-top: 9px;
+    margin-right: 6px;
+}
+.gd-icon{
+    content: "";
+    display: inline-block;
+    width:20px;
+    height:20px;
+    background-image:url('img/logo/googledrive.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    vertical-align: top;    
+}
+.dbx-btn{
+    background-color:rgb(4, 133, 255);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 36px;
+    width: 200px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
+}
+.dbx-btn::before{
+    content: "";
+    display: inline-block;
+    width:19px;
+    height:19px;
+    background-image:url('img/logo/dropbox.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    vertical-align: top;
+    margin-top: 9px;
+    margin-right: 6px;
+}
+.dbx-icon{
+    content: "";
+    display: inline-block;
+    width:20px;
+    height:20px;
+    background-image:url('img/logo/dropbox.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    vertical-align: top;
+}
+
+
+
+.encrypted-files {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+
+
+
+
+
 .all-content-wrapper {
     margin-left: 205px;
     transition: all 0.3s;
@@ -145,12 +241,63 @@ body {}
     z-index: 99999;
     background: #1b2a47;
 }
+.gd-login {
+    text-align: center;
+}
+.gd-login img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #152036;
+}
+.gd-login h2 {
+	font-size:16px;
+	color:#fff;
+	font-weight:400;
+	margin: 10px 0px 15px 0px;
+}
+.gd-login button {
+    border-radius: 3px;
+    background-color: #ffc400;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+.gd-login button:active, .gd-login button:hover, .gd-login button:focus{
+	outline:none;
+}
+.dbx-login {
+    text-align: center;
+}
+.dbx-login img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #152036;
+}
+.dbx-login h2 {
+	font-size:16px;
+	color:#fff;
+	font-weight:400;
+	margin: 10px 0px 15px 0px;
+}
+.dbx-login button {
+    border-radius: 3px;
+    background-color: #f3c600;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    padding: 10px 15px;
+    text-decoration: none;
+}
 .profile-dtl {
     text-align: center;
 }
 .profile-dtl img {
-    width: 75px;
-    height: 75px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     border: 2px solid #152036;
 }
@@ -160,6 +307,13 @@ body {}
 	font-weight:400;
 	margin: 10px 0px 15px 0px;
 }
+
+/* 왼쪽 바 부분 하는중 */
+
+
+
+
+
 ul.dtl-social{
 	display: flex;
     justify-content: center;
@@ -491,6 +645,7 @@ ul.dtl-social li a{
 	font-size:20px;
 	text-decoration:none;
 	position:relative;
+    margin-top:8px;
 }
 .indicator-nt{
 	position:absolute;
@@ -805,7 +960,6 @@ ul.setting-panel-list li{
     background: #152036;
 }
 .breadcome-list {
-    padding:20px;
 	background:#1b2a47;
 	margin:30px 0px;
 }
