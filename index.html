@@ -126,10 +126,6 @@
                                     <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12">
                                         <div class="header-top-menu tabl-d-n hd-search-rp">
                                             <div class="breadcome-heading">
-												<form role="search" class="">
-													<input type="text" placeholder="Search..." class="form-control">
-													<a href=""><i class="fa fa-search"></i></a>
-												</form>
 											</div>
                                         </div>
                                     </div>
@@ -205,33 +201,14 @@
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12" style="margin-bottom:1px;">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
-                                <h4 class="text-left text-uppercase"><b>Tax Deduction</b></h4>
-                                <div class="row vertical-center-box vertical-center-box-tablet">
-                                    <div class="text-left col-xs-3 mar-bot-15">
-                                        <label class="label bg-red">15% <i class="fa fa-level-down" aria-hidden="true"></i></label>
-                                    </div>
-                                    <div class="col-xs-9 cus-gh-hd-pro">
-                                        <h2 class="text-right no-margin">5,000</h2>
-                                    </div>
-                                </div>
-                                <div class="progress progress-mini">
-                                    <div style="width: 38%;" class="progress-bar progress-bar-danger bg-red"></div>
-                                </div>
+                                <h4 class="text-left text-uppercase"><b>Google Drive List</b></h4>
+                                <ul id="gd-files"></ul>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
-                                <h4 class="text-left text-uppercase"><b>Revenue</b></h4>
+                                <h4 class="text-left text-uppercase"><b>Fragment Files List</b></h4>
                                 <div class="row vertical-center-box vertical-center-box-tablet">
-                                    <div class="text-left col-xs-3 mar-bot-15">
-                                        <label class="label bg-blue">50% <i class="fa fa-level-up" aria-hidden="true"></i></label>
-                                    </div>
-                                    <div class="col-xs-9 cus-gh-hd-pro">
-                                        <h2 class="text-right no-margin">$70,000</h2>
-                                    </div>
-                                </div>
-                                <div class="progress progress-mini">
-                                    <div style="width: 60%;" class="progress-bar bg-blue"></div>
                                 </div>
                             </div>
                         </div>
@@ -245,47 +222,34 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-15">
-                                <h4 class="text-left text-uppercase"><b>Orders</b></h4>
+                                <h4 class="text-left text-uppercase"><b>Dropbox Upload</b></h4>
                                 <div class="row vertical-center-box vertical-center-box-tablet">
-                                    <div class="col-xs-3 mar-bot-15 text-left">
-                                        <label class="label bg-green">30% <i class="fa fa-level-up" aria-hidden="true"></i></label>
+                                    <div class="dbx-upload-block">
+                                        <form onSubmit="return">
+                                            <input type="file" id="dbxfile-upload" />
+                                            <button type="button" id="dbxfile-upload-btn" class="dbx-upload-btn">업로드</button>
+                                        </form>
                                     </div>
-                                    <div class="col-xs-9 cus-gh-hd-pro">
-                                        <h2 class="text-right no-margin">10,000</h2>
-                                    </div>
-                                </div>
-                                <div class="progress progress-mini">
-                                    <div style="width: 78%;" class="progress-bar bg-green"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12" style="margin-bottom:1px;">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
-                                <h4 class="text-left text-uppercase"><b>Tax Deduction</b></h4>
+                                <h4 class="text-left text-uppercase"><b>Google Drive Upload</b></h4>
                                 <div class="row vertical-center-box vertical-center-box-tablet">
-                                    <div class="text-left col-xs-3 mar-bot-15">
-                                        <label class="label bg-red">15% <i class="fa fa-level-down" aria-hidden="true"></i></label>
+                                    <div class="gd-upload-block">
+                                        <form onSubmit="return">
+                                            <input type="file" id="gdfile-upload" />
+                                            <button type="button" id="gdfile-upload-btn" class="gd-upload-btn">업로드</button>
+                                        </form>
                                     </div>
-                                    <div class="col-xs-9 cus-gh-hd-pro">
-                                        <h2 class="text-right no-margin">5,000</h2>
-                                    </div>
-                                </div>
-                                <div class="progress progress-mini">
-                                    <div style="width: 38%;" class="progress-bar progress-bar-danger bg-red"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
                             <div class="admin-content analysis-progrebar-ctn res-mg-t-30">
-                                <h4 class="text-left text-uppercase"><b>Revenue</b></h4>
-                                <div class="row vertical-center-box vertical-center-box-tablet">
-                                    <div class="text-left col-xs-3 mar-bot-15">
-                                        <label class="label bg-blue">50% <i class="fa fa-level-up" aria-hidden="true"></i></label>
-                                    </div>
-                                    <div class="col-xs-9 cus-gh-hd-pro">
-                                        <h2 class="text-right no-margin">$70,000</h2>
-                                    </div>
-                                </div>
+                                <h4 class="text-left text-uppercase"><b>Fragment Upload</b></h4>
+                                <input type="range" name="holy" min="0" max="10">
                                 <div class="progress progress-mini">
                                     <div style="width: 60%;" class="progress-bar bg-blue"></div>
                                 </div>
