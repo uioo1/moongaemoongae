@@ -8,11 +8,19 @@ const IV = "0123456789abcdef";
 
 const META_DATA_DRIVE = "DROPBOX";
 const SLICE_RATIO = [0.1, 0.9];
-const SLICE_DRIVE = ["DROPBOX", "DROPBOX"];
-var meta = new MetaData("/Users/kygsm/meta.md");
-var metaBtnGroup = null;
+const SLICE_DRIVE = ["DROPBOX", "GOOGLE"];
 
-var DBX_CLIENT_ID = 'yhfujf4ushejyu5';
+const DBX_CLIENT_ID = 'yhfujf4ushejyu5';
+
+const GOO_CLIENT_ID = '808379896395-pjo7v8bl56l5q9t3ddev1egr2d352luv.apps.googleusercontent.com';
+const GOO_API_KEY = 'AIzaSyBUK4VZ1ZvZpFtALRZGWPdUHrHYS8-0LBg';
+
+const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+const SCOPES = 'https://www.googleapis.com/auth/drive';
+let tokenClient;
+let gapiInited = false;
+let gisInited = false;
+
 var DBX_ACCESS_TOKEN = null;
 if (JSON.parse(localStorage.getItem('dbx-token')) != null) {
     DBX_ACCESS_TOKEN = JSON.parse(localStorage.getItem('dbx-token')).dbx_token;
@@ -26,20 +34,22 @@ else {
 // var DBX_ACCESS_TOKEN = "";
 var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID, accessToken: DBX_ACCESS_TOKEN });
 
+var meta = new MetaData("/Users/kygsm/meta.md");
+var metaBtnGroup = null;
+
 document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 var metaBtnGroup = null;var meta = new MetaData("/Users/kygsm/meta.md");
 
 // 승모 함수 부분
-function onFileBtnClicked(){
+function onFileBtnClicked() {
     var fileInput = document.getElementById("file-upload");
     console.log(fileInput)
     uploadFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
 }
 
-//without encrypt
-function onFileBtnClicked2(){
+function onFileBtnClicked2() {
     var filePath = document.getElementById("file-download-path").value;
     console.log(filePath);
     downloadFile(SLICE_DRIVE[0], filePath);
@@ -63,45 +73,46 @@ function readFile(platform, path, callback) {
             var rawFile = new XMLHttpRequest();
             rawFile.open("GET", path, true);
             rawFile.responseType = "arraybuffer";
-            
-            rawFile.onreadystatechange = function() {
+
+            rawFile.onreadystatechange = function () {
                 if (rawFile.readyState === 4 && rawFile.status == "200") {
                     callback(rawFile.response);
                 }
             }
             rawFile.send(null);
             break;
-        
-        case "GOOGLE" :
+
+        case "GOOGLE":
+            downloadFileGoo(path, function (str, fileName) { callback(str, fileName) });
             break;
-        
+
         case "DROPBOX":
-            downloadFileDBX(path, function(str, fileName){ callback(str, fileName)});
+            downloadFileDBX(path, function (str, fileName) { callback(str, fileName) });
             break;
         default:
             break;
     }
 }
 
-function readMetaData(){
-    readFile(META_DATA_DRIVE, "/meta.md", function(str){
+function readMetaData() {
+    readFile(META_DATA_DRIVE, "/meta.md", function (str) {
         console.log(meta);
-        meta.readMetaData(str, function(){
+        meta.readMetaData(str, function () {
             //console.log(meta._datas[0]._name);
-            if(metaBtnGroup){
+            if (metaBtnGroup) {
                 metaBtnGroup.remove();
                 metaBtnGroup = null;
             }
             metaBtnGroup = document.createElement("btnGroup");
-            document.body.appendChild( metaBtnGroup );
-            for(let i = 0; i < meta._datas.length; i++){    
+            document.body.appendChild(metaBtnGroup);
+            for (let i = 0; i < meta._datas.length; i++) {
                 var submitUI = document.createElement("button");
-                var submitUItext = document.createTextNode( meta._datas[i]._name );
-            
+                var submitUItext = document.createTextNode(meta._datas[i]._name);
+
                 submitUI.type = "submit";
                 submitUI.type = ""
                 submitUI.onclick = downloadFragmentFile.bind(meta._datas[i]);
-                submitUI.appendChild( submitUItext );
+                submitUI.appendChild(submitUItext);
                 metaBtnGroup.appendChild(submitUI);
             }
         })
@@ -116,19 +127,19 @@ function readMetaData(){
  * @param {*} callback 
  * @returns 
  */
- function checkFileLoad(files, fileNum, callback){
-    for(let i = 0; i < fileNum; i++){
-        if(files[i] === undefined){
+function checkFileLoad(files, fileNum, callback) {
+    for (let i = 0; i < fileNum; i++) {
+        if (files[i] === undefined) {
             return false;
         }
     }
     return callback();
 }
 
-function downloadFile(platform, path){
-    readFile(platform, path, function(ss, name){
+function downloadFile(platform, path) {
+    readFile(platform, path, function (ss, name) {
         var element = document.createElement('a');
-        const blob = new Blob([ss], {type : 'application/octet-stream'});
+        const blob = new Blob([ss], { type: 'application/octet-stream' });
         element.href = URL.createObjectURL(blob);
         element.setAttribute('download', name);
         document.body.appendChild(element);
@@ -136,7 +147,7 @@ function downloadFile(platform, path){
     });
 }
 
-function downloadFragmentFile(){
+function downloadFragmentFile() {
     var fileName = this._name;
     var fragments = this._fragments;
     var fileSize = this._dataSize;
@@ -144,18 +155,18 @@ function downloadFragmentFile(){
     var ss = null;
 
     console.log(fragments)
-    
-    for(let i = 0; i < fragments.length; i++){
+
+    for (let i = 0; i < fragments.length; i++) {
         console.log(fragments)
-        readFile(fragments[i].drive, fragments[i].path + fragments[i].name, function(str){
+        readFile(fragments[i].drive, fragments[i].path + fragments[i].name, function (str) {
             files[i] = str;
-            
+
             // 파일이 다 로드 되었는지 확인
-            checkFileLoad(files, fragments.length, function(){
+            checkFileLoad(files, fragments.length, function () {
                 const cryptor = new Crypto(KEY, IV);
-                
-                for(let i = 0; i < fragments.length; i++){
-                    if(fragments[i].isEncrypted){
+
+                for (let i = 0; i < fragments.length; i++) {
+                    if (fragments[i].isEncrypted) {
                         files[i] = cryptor.decrypt(new TextDecoder().decode(files[i]));
                         files[i] = convertWordArrayToUint8Array(files[i]);
                         files[i] = files[i].slice(0, fragments[i].size);
@@ -167,7 +178,7 @@ function downloadFragmentFile(){
                 ss = mergeFile(files);
 
                 var element = document.createElement('a');
-                const blob = new Blob([ss], {type : 'application/octet-stream'});
+                const blob = new Blob([ss], { type: 'application/octet-stream' });
                 element.href = URL.createObjectURL(blob);
                 element.setAttribute('download', fileName);
                 document.body.appendChild(element);
@@ -177,7 +188,6 @@ function downloadFragmentFile(){
     }
 }
 
-
 /**
  * 
  * @param {*} file 
@@ -185,37 +195,37 @@ function downloadFragmentFile(){
  * @param {*} ratios 
  * @param {Array} drives 
  */
-function uploadFile(file, isCrypto, ratios, drives){
+function uploadFile(file, isCrypto, ratios, drives) {
     var reader = new FileReader();
     reader.readAsArrayBuffer(file);
-    
-    reader.onload = function(){
+
+    reader.onload = function () {
         let files = [];
-        if(isCrypto){
+        if (isCrypto) {
             drives.splice(0, 0, drives[0]);
             let tempfiles = splitFileWithRatio(reader.result, ratios);
-            if(tempfiles[0].byteLength >= CRYPTO_SIZE){
+            if (tempfiles[0].byteLength >= CRYPTO_SIZE) {
                 let tempfiles2 = splitFileWithBytes(tempfiles[0], [CRYPTO_SIZE, reader.result.byteLength]);
                 files.push.apply(files, tempfiles2);
                 files.push.apply(files, tempfiles.splice(1));
             }
-            else{
+            else {
                 files.push.apply(files, tempfiles);
             }
         }
-        else{
+        else {
             files = splitFileWithRatio(reader.result, ratios);
         }
 
         var frag = new fragmentData(file.name, reader.result.byteLength);
 
-        for(let i = 0; i < files.length; i++){
+        for (let i = 0; i < files.length; i++) {
             let fileSize = files[i].byteLength;
 
-            if(i == 0 && isCrypto){
+            if (i == 0 && isCrypto) {
                 const cryptor = new Crypto(KEY, IV);
                 files[i] = cryptor.encrypt(CryptoJS.lib.WordArray.create(files[i]));
-                
+
                 frag.addFileInfo(file.name + i, "/mgmg/", drives[i], fileSize, true);
             }
             else
@@ -224,35 +234,43 @@ function uploadFile(file, isCrypto, ratios, drives){
             switch (drives[i]) {
                 case "PC":
                     var element = document.createElement('a');
-                    const blob = new Blob([files[i]], {type : 'application/octet-stream'});
+                    const blob = new Blob([files[i]], { type: 'application/octet-stream' });
                     element.href = URL.createObjectURL(blob);
                     element.setAttribute('download', file.name + i);
 
                     document.body.appendChild(element);
                     element.click();
                     break;
-                
-                case "GOOGLE" :
+
+                case "GOOGLE":
+                    const gooBlob = new Blob([files[i]], { type: 'application/octet-stream' });
+                    if (files.length === 0) {
+                        var gooFile = new File([gooBlob], file.name);
+                        uploadFileGoo('/', gooFile);
+                    }
+                    else {
+                        var gooFile = new File([gooBlob], file.name + i);
+                        uploadFileGoo('/mgmg/', gooFile);
+                    }
                     break;
-        
+
                 case "DROPBOX":
-                    const dbxBlob = new Blob([files[i]], {type : 'application/octet-stream'});
-                    if (files.length === 0){
+                    const dbxBlob = new Blob([files[i]], { type: 'application/octet-stream' });
+                    if (files.length === 0) {
                         var dbxFile = new File([dbxBlob], file.name);
                         uploadFileDBX('/', dbxFile);
                     }
-                    else{
+                    else {
                         var dbxFile = new File([dbxBlob], file.name + i);
                         uploadFileDBX('/mgmg/', dbxFile);
                     }
-                    
                     break;
-                default: 
+                default:
                     break;
             }
         }
         meta.pushData(frag);
-        const blobMD = new Blob([meta.writeMetaData()], {type : 'application/octet-stream'});
+        const blobMD = new Blob([meta.writeMetaData()], { type: 'application/octet-stream' });
         var fileMD = new File([blobMD], "meta.md");
 
         switch (META_DATA_DRIVE) {
@@ -260,16 +278,17 @@ function uploadFile(file, isCrypto, ratios, drives){
                 var a = document.createElement("a");
                 a.href = URL.createObjectURL(file);
                 a.download = "meta.md";
-                a.click();       
+                a.click();
                 break;
-            
-            case "GOOGLE" :
+
+            case "GOOGLE":
+                uploadFileGoo('/', fileMD, readMetaData);
                 break;
-    
-            case "DROPBOX":                
-                uploadFileDBX('/', fileMD, readMetaData);                             
+
+            case "DROPBOX":
+                uploadFileDBX('/', fileMD, readMetaData);
                 break;
-            default: 
+            default:
                 break;
         }
     }
@@ -282,14 +301,14 @@ function uploadFile(file, isCrypto, ratios, drives){
  * @param {*} num number of files to split
  * @param {Array} ratios 
  */
-function splitFileWithRatio(file, ratios){
+function splitFileWithRatio(file, ratios) {
     let splitSize = 0;
     let bytes = [];
     let num = ratios.length;
 
-    for(let i = 0; i < num; i++){
+    for (let i = 0; i < num; i++) {
         let newSplitSize = 0;
-        if(i === (num - 1)){
+        if (i === (num - 1)) {
             newSplitSize = file.byteLength;
         }
         else
@@ -311,11 +330,11 @@ function splitFileWithRatio(file, ratios){
  * @param {Array} bytes 
  * @returns 
  */
-function splitFileWithBytes(file, bytes){
+function splitFileWithBytes(file, bytes) {
     let splitSize = 0;
     let files = [];
     let num = bytes.length;
-    for(let i = 0; i < num; i++){
+    for (let i = 0; i < num; i++) {
         let newSplitSize = bytes[i];
         files.push(file.slice(splitSize, newSplitSize));
         splitSize = newSplitSize;
@@ -329,16 +348,15 @@ function splitFileWithBytes(file, bytes){
  * @param {ArrayBuffer} files files to merge
  * @returns {ArrayBuffer} merged file
  */
-function mergeFile(files){
-    //console.log(files);
+function mergeFile(files) {
     var fileSize = 0;
-    for(let i = 0; i < files.length; i++){
+    for (let i = 0; i < files.length; i++) {
         fileSize += files[i].byteLength;
     }
 
     var file = new Uint8Array(fileSize);
     var offset = 0;
-    for(let i = 0; i< files.length; i++){
+    for (let i = 0; i < files.length; i++) {
         file.set(new Uint8Array(files[i]), offset);
         offset += files[i].byteLength;
     }
@@ -352,43 +370,231 @@ function mergeFile(files){
  * @returns Uint8Array type
  */
 function convertWordArrayToUint8Array(wordArray) {
-	var len = wordArray.words.length,
-		u8_array = new Uint8Array(len << 2),
-		offset = 0, word, i
-	;
-	for (i=0; i<len; i++) {
-		word = wordArray.words[i];
-		u8_array[offset++] = word >> 24;
-    	u8_array[offset++] = (word >> 16) & 0xff;
-		u8_array[offset++] = (word >> 8) & 0xff;
-		u8_array[offset++] = word & 0xff;
-	}
-	return u8_array;
+    var len = wordArray.words.length,
+        u8_array = new Uint8Array(len << 2),
+        offset = 0, word, i
+        ;
+    for (i = 0; i < len; i++) {
+        word = wordArray.words[i];
+        u8_array[offset++] = word >> 24;
+        u8_array[offset++] = (word >> 16) & 0xff;
+        u8_array[offset++] = (word >> 8) & 0xff;
+        u8_array[offset++] = word & 0xff;
+    }
+    return u8_array;
+}
+$.getScript("https://apis.google.com/js/api.js", gapiLoaded);
+$.getScript("https://accounts.google.com/gsi/client", gisLoaded);
+
+/////////////// GOOGLE CODE ///////////////////
+function gapiLoaded() {
+    gapi.load('client', intializeGapiClient);
 }
 
+/**
+ * Callback after the API client is loaded. Loads the
+ * discovery doc to initialize the API.
+ */
+async function intializeGapiClient() {
+    await gapi.client.init({
+        apiKey: GOO_API_KEY,
+        discoveryDocs: [DISCOVERY_DOC],
+    });
+    gapiInited = true;
+    //maybeEnableButtons();
+}
 
+/**
+ * Callback after Google Identity Services are loaded.
+ */
+function gisLoaded() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOO_CLIENT_ID,
+        scope: SCOPES,
+        callback: '', // defined later
+    });
+    gisInited = true;
+    //maybeEnableButtons();
+    handleAuthClick();
+}
 
+function handleAuthClick() {
+    tokenClient.callback = async (resp) => {
+        if (resp.error !== undefined) {
+            throw (resp);
+        }
+    };
+    if (gapi.client.getToken() === null) {
+        // Prompt the user to select a Google Account and ask for consent to share their data
+        // when establishing a new session.
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+    } else {
+        // Skip display of account chooser and consent dialog for an existing session.
+        tokenClient.requestAccessToken({ prompt: '' });
+    }
+}
 
+function handleSignoutClick() {
+    const token = gapi.client.getToken();
+    if (token !== null) {
+        google.accounts.oauth2.revoke(token.access_token);
+        gapi.client.setToken('');
+        document.getElementById('content').innerText = '';
+        document.getElementById('authorize_button').innerText = 'Authorize';
+        document.getElementById('signout_button').style.visibility = 'hidden';
+    }
+}
 
+/**
+ * 
+ * @param {string} path 
+ * @returns 
+ */
+async function getFileInfo(path, createPath) {
+    var parentID = 'root';
+    var parent = null;
+    var f = path.split("/");
+    if (f[0] === "") {
+        f.splice(0, 1);
+    }
+    if (f[f.length - 1] === "") {
+        f.splice(f.length - 1, 1)
+    }
+    let response;
+    for (let i = 0; i < f.length; i++) {
+        try {
+            response = await gapi.client.drive.files.list({
+                'q': `name = '${f[i]}' and '${parentID}' in parents and trashed = false`,
+                'pageSize': 300,
+                'fields': 'files(id, name, parents)',
+            });
+        } catch (err) {
+            document.getElementById('content').innerText = err.message;
+            return;
+        }
+        const files = response.result.files;
+        if (!files || files.length == 0) {
+            //document.getElementById('content').innerText = 'No files found.';
+            if (!createPath) {
+                console.log(parent);
+                return;
+            }
+            else {
+                console.log("wow")
+                await createFolder(f[i]);
+                i--;
+                continue;
+            }
+        }
+        parent = files[0];
+        parentID = files[0].id;
+    }
+    console.log(parent);
+    return parent;
+}
 
+function downloadFileGoo(filepath, callback) {
+    createFolder("asd");
+    getFileInfo(filepath).then((fileID) => {
+        console.log(fileID);
+        fileID = fileID.id;
+        //file buffer download
+        gapi.client.drive.files.get({
+            'fileId': fileID,
+            'alt' : 'media'           
+        }).then(
+            (response) => {
+                if (callback) {
+                    const dataUrl = `data:${response.headers["Content-Type"]};base64,${btoa(response.body)}`;
+                    
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', dataUrl, true);
+                    xhr.responseType = "arraybuffer";
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4 && xhr.status == "200") {
+                            console.log(xhr.response);
+                            callback(xhr.response);
+                        }
+                        
+                    };
+                    xhr.onerror = function() {
+                        callback(null);
+                    };
+                    xhr.send();
+                }
+            }
+        );
+    });
+};
 
+function uploadFileGoo(filePath, fileData, callback) {
+    var parentFileID = 'root';
+    if (filePath != "/") {
+        getFileInfo(filePath, true).then(
+            (parentFile) => {
+                parentFileID = parentFile.id;
+                //console.log(parentFile);
+                const boundary = '-------314159265358979323846';
+                const delimiter = "\r\n--" + boundary + "\r\n";
+                const close_delim = "\r\n--" + boundary + "--";
 
+                var reader = new FileReader();
+                reader.readAsBinaryString(fileData);
+                reader.onload = function(e) {
+                    var contentType = fileData.type || 'application/octet-stream';
+                    var metadata = {
+                        'title': fileData.name,
+                        'mimeType': contentType,
+                        'parents' : [{id : parentFileID}]
+                    };
 
+                    var base64Data = btoa(reader.result);
+                    var multipartRequestBody =
+                        delimiter +
+                        'Content-Type: application/json\r\n\r\n' +
+                        JSON.stringify(metadata) +
+                        delimiter +
+                        'Content-Type: ' + contentType + '\r\n' +
+                        'Content-Transfer-Encoding: base64\r\n' +
+                        '\r\n' +
+                        base64Data +
+                        close_delim;
 
+                    var request = gapi.client.request({
+                        'path': '/upload/drive/v2/files',
+                        'method': 'POST',
+                        'params': {'uploadType': 'multipart'},
+                        'headers': {
+                        'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                        },
+                        'body': multipartRequestBody});
+                    if (!callback) {
+                    callback = function(file) {
+                        console.log(file)
+                    };
+                    }
+                    request.execute(callback);
+                }
+            }
+        );
+    }
+}
 
+async function createFolder(folderName) {
+    await gapi.client.request({
+        'path': '/drive/v2/files',
+        'method': 'POST',
+        'body': {
+            "title": folderName,
+            "mimeType": "application/vnd.google-apps.folder",
+            "description": "Some"
+        }
+    });
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+function str2ab(text) {
+    return new TextEncoder().encode(text).buffer;
+}
 
 /////////////// DBX CODE ///////////////////
 // OAuth Script start
@@ -456,7 +662,8 @@ if (isDBXAuthenticated()) {
     dbx = new Dropbox.Dropbox({ accessToken: DBX_ACCESS_TOKEN });
     listFiles(dbx, '')
     readMetaData();
-} else {
+}
+else {
     showPageSection('dbx-authlogin');
     hidePageSection('dbx-info-id');
     dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID });
@@ -474,21 +681,20 @@ function showFolder(dbx, path, folder) {
 }
 
 // Upload Script start
-function uploadFileDBX(filePath, DBXfile, callback=null) {
+function uploadFileDBX(filePath, DBXfile, callback = null) {
     const UPLOAD_FILE_SIZE_LIMIT = 150 * 1024 * 1024;
     // var fileInput = document.getElementById('file-upload');
     var file = DBXfile;
 
     if (file.size < UPLOAD_FILE_SIZE_LIMIT) { // File is smaller than 150 Mb - use filesUpload API
-        dbx.filesUpload({ path: filePath + file.name, contents: file, mode:'overwrite' })
+        dbx.filesUpload({ path: filePath + file.name, contents: file, mode: 'overwrite' })
             .then(function (response) {
                 var results = document.getElementById('results');
                 var br = document.createElement("br");
                 results.appendChild(document.createTextNode('File uploaded!'));
                 results.appendChild(br);
                 console.log(response);
-                if (callback)
-                {   
+                if (callback) {
                     callback();
                 }
             })
@@ -532,8 +738,7 @@ function uploadFileDBX(filePath, DBXfile, callback=null) {
         task.then(function (result) {
             var results = document.getElementById('results');
             results.appendChild(document.createTextNode('File uploaded!'));
-            if (callback)
-            {   
+            if (callback) {
                 callback();
             }
         }).catch(function (error) {
