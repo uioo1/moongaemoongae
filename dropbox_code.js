@@ -37,14 +37,14 @@ var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID, accessToken: DBX_ACCESS
 var meta = new MetaData("/Users/kygsm/meta.md");
 var metaBtnGroup = null;
 
-document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
+document.getElementById("dbxfile-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
 
 // 승모 함수 부분
 function onFileBtnClicked() {
-    var fileInput = document.getElementById("file-upload");
+    var fileInput = document.getElementById("dbxfile-upload");
     console.log(fileInput)
     uploadFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
 }
