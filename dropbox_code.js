@@ -38,6 +38,7 @@ var meta = new MetaData("/Users/kygsm/meta.md");
 var metaBtnGroup = null;
 
 document.getElementById("dbxfile-upload-btn").addEventListener("click", onFileBtnClicked);
+document.getElementById("gdfile-upload-btn").addEventListener("click", onFileBtnClicked);
 document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
 document.getElementById("logout-GD").addEventListener("click", handleSignoutClick);
@@ -46,7 +47,7 @@ document.getElementById("logout-GD").addEventListener("click", handleSignoutClic
 function onFileBtnClicked() {
     var fileInput = document.getElementById("dbxfile-upload");
     console.log(fileInput)
-    uploadFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
+    uploadFragementFile(fileInput.files[0], false, SLICE_RATIO, SLICE_DRIVE);
 }
 
 function onFileBtnClicked2() {
@@ -58,7 +59,7 @@ function onFileBtnClicked2() {
     input.accept = "*";
     input.click();
     input.onchange = function (event){
-        uploadFile(event.target.files[0], false, SLICE_RATIO, SLICE_DRIVE);
+        uploadFragementFile(event.target.files[0], false, SLICE_RATIO, SLICE_DRIVE);
     }
     */
 }
@@ -199,7 +200,7 @@ function downloadFragmentFile() {
  * @param {*} ratios 
  * @param {Array} drives 
  */
-function uploadFile(file, isCrypto, ratios, drives) {
+function uploadFragementFile(file, isCrypto, ratios, drives) {
     var reader = new FileReader();
     reader.readAsArrayBuffer(file);
 
