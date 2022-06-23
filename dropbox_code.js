@@ -688,7 +688,7 @@ function renderItemsGD() {
             filesContainer.appendChild(li);
             var parameter = {drive:'GOOGLE', path: '/' + item.name}; 
             submitUI.setAttribute("class", 'gd-file-download');
-            var submitUItext = document.createTextNode("Download");
+            var submitUItext = document.createTextNode("다운로드");
             submitUI.type = "submit";
 
             if(item.mimeType === "application/vnd.google-apps.folder"){
