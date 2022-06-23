@@ -398,9 +398,10 @@ async function intializeGapiClient() {
     if (JSON.parse(localStorage.getItem('gd-token')) != null) {
         gapi.client.setToken(JSON.parse((localStorage.getItem('gd-token'))));
         console.log(gapi.client.getToken());
+        renderItemsGD();
         showPageSection('gd-info-id');
         hidePageSection('gd-authlogin');
-        getFileListat("/")
+        getFileListGD("/")
     }
     //maybeEnableButtons();
 }
@@ -432,7 +433,7 @@ function handleAuthClick() {
         localStorage.setItem('gd-token', JSON.stringify(toekn));
         let token = JSON.parse(localStorage.getItem('gd-token'));
         console.log(token.access_token);
-
+        renderItemsGD();
         showPageSection('gd-info-id');
         hidePageSection('gd-authlogin');
 
@@ -509,7 +510,7 @@ async function getFileInfo(path, createPath) {
     return parent;
 }
 
-function getFileListat(path, callback) {
+function getFileListatGD(path, callback) {
     getFileInfo(path).then((fileInfo) => {
         if(!fileInfo){
             fileInfo = {id : 'root'}
@@ -625,27 +626,46 @@ async function createFolder(folderName) {
     });
 }
 
-function renderItemsGoo() {
-    var filesContainer = document.getElementById('dbx-files');
-    items.forEach(function (item) {
-        var li = document.createElement('li');
-        var submitUI = document.createElement("button");
-        submitUI.style.visibility = 'hidden';
-        li.setAttribute("id", "dbx-file-li");
-        li.innerHTML = item.name;
-        filesContainer.append(li);
-        downloadFileDBX('/' + item.name, function(){
-            submitUI.style.visibility = 'visible';
+function renderItemsGD() {
+    var filesContainer = document.getElementById('gd-files');
+    getFileListatGD(googlePath, function(items){
+        items.sort(function (a, b){
+            if(a.mimeType === b.mimeType){
+                var nameA = a.name.toUpperCase();
+                var nameB = b.name.toUpperCase();
+                return nameA < nameB;
+            }
+            if(a.mimeType === "application/vnd.google-apps.folder"){
+                return -1;
+            }
+            if(b.mimeType === "application/vnd.google-apps.folder"){
+                return 1;
+            }
+            var nameA = a.name.toUpperCase();
+            var nameB = b.name.toUpperCase();
+            return nameA < nameB;
         })
-        var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
-        submitUI.setAttribute("class", 'dbx-file-download');
-        var submitUItext = document.createTextNode("Download");
-        submitUI.type = "submit";
-    
-        submitUI.onclick = tempDownFile.bind(parameter);
-        submitUI.appendChild(submitUItext);
-        li.appendChild(submitUI);
-    });
+        items.forEach(function (item) {
+            var li = document.createElement('li');
+            var submitUI = document.createElement("button");
+            submitUI.style.visibility = 'visible';
+            li.setAttribute("id", "dbx-file-li");
+            li.innerHTML = item.name;
+            filesContainer.append(li);
+            var parameter = {drive:'DROPBOX', path: '/' + item.name}; 
+            submitUI.setAttribute("class", 'dbx-file-download');
+            var submitUItext = document.createTextNode("Download");
+            submitUI.type = "submit";
+
+            if(item.mimeType === "application/vnd.google-apps.folder"){
+                submitUI.style.visibility = 'hidden';
+            }
+        
+            submitUI.onclick = tempDownFile.bind(parameter);
+            submitUI.appendChild(submitUItext);
+            li.appendChild(submitUI);
+        });
+    })
 }
 
 function str2ab(text) {
@@ -677,6 +697,7 @@ function tempDownFile() {
 
 function renderItems(items) {
     var filesContainer = document.getElementById('dbx-files');
+    
     items.forEach(function (item) {
         var li = document.createElement('li');
         var submitUI = document.createElement("button");
