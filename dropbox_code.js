@@ -26,10 +26,10 @@ else {
 // var DBX_ACCESS_TOKEN = "";
 var dbx = new Dropbox.Dropbox({ clientId: DBX_CLIENT_ID, accessToken: DBX_ACCESS_TOKEN });
 
-//document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
-//document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
+document.getElementById("file-upload-btn").addEventListener("click", onFileBtnClicked);
+document.getElementById("file-download-btn").addEventListener("click", onFileBtnClicked2);
 document.getElementById("logout-DBX").addEventListener("click", logoutDBX);
-
+var metaBtnGroup = null;var meta = new MetaData("/Users/kygsm/meta.md");
 
 // 승모 함수 부분
 function onFileBtnClicked(){
