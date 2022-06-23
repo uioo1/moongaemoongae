@@ -97,6 +97,9 @@ body {}
 .gd-upload-block {
     display: inline-block;
 }
+.frg-upload-block {
+    display: inline-block;
+}
 .button, button {
     border-radius: 3px;
     background-color: #167bff;
@@ -158,6 +161,18 @@ body {}
     text-decoration: none;
     margin-right: 20px;
     margin-left: 10px;
+    margin-top: 5px;
+}
+.frg-upload-btn {
+    background-color:rgb(170, 28, 253);
+    border-radius: 3px;
+    border: none;
+    color:#ffffff;
+    line-height: 20px;
+    width: 100px;
+    font-size: 14px;
+    padding: 9px 14px;
+    text-decoration: none;
     margin-top: 5px;
 }
 .gd-btn{
