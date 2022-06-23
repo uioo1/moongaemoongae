@@ -32,16 +32,17 @@ input {
   padding: 8px;
   font-size: 16px;
 }
+/*
 .button, button {
   border-radius: 3px;
-  background-color: #007ee5;
+  background-color: #00c73c;
   border: none;
   color: #fff;
   font-size: 16px;
   padding: 10px 15px;
   text-decoration: none;
 }
-
+*/
 .page-header {
   background-color: #007ee5;
   padding: 10px 0 0 0;
